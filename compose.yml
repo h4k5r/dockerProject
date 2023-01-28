@@ -1,0 +1,46 @@
+services:
+  front-end:
+    build:
+      context: ./front_end
+    ports:
+      - 3000:3000
+    depends_on:
+      - back-end
+    networks:
+      - internal
+    #fetch(backend:5000)
+
+  back-end:
+    container_name: backend
+    build:
+      context: ./back_end
+    ports:
+      - 5000:5000
+    depends_on:
+      - database
+    networks:
+      - internal
+  #db.connect(postgres:5432)
+
+  database:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+    volumes:
+      - type: volume
+        source: screwMe-data-volume
+        target: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - internal
+
+volumes:
+  screwMe-data-volume:
+
+networks:
+  internal:
+    driver: bridge
